@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from cvagent.job import load_job
+from cvagent.job import fetch_job_from_url, load_job
 from cvagent.llm import DEFAULT_MODEL, generate
 from cvagent.profile import load_profile
 from cvagent.prompt import build_prompt
@@ -20,8 +20,7 @@ def main() -> None:
 	parser = argparse.ArgumentParser(description="Generate a customized cover letter using a local LLM via Ollama.")
 	parser.add_argument(
 		"job",
-		type=Path,
-		help="Path to the job YAML file (e.g. data/jobs/example_job.yaml)",
+		help="Path to a job YAML file, or a URL to a job posting page",
 	)
 	parser.add_argument(
 		"--profile",
@@ -49,7 +48,10 @@ def main() -> None:
 	args = parser.parse_args()
 
 	profile = load_profile(args.profile)
-	job = load_job(args.job)
+	if args.job.startswith("http://") or args.job.startswith("https://"):
+		job = fetch_job_from_url(args.job, model=args.model)
+	else:
+		job = load_job(Path(args.job))
 	prompt = build_prompt(profile, job)
 
 	print(f"Generating cover letter for {job['role']} at {job['company']}...")

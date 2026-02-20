@@ -92,10 +92,12 @@ def render_docx(
 	p_name.paragraph_format.space_before = Pt(8)
 	_add_run(p_name, name, bold=True, size=Pt(16), color=RGBColor(0xFF, 0xFF, 0xFF))
 
+	# Each contact field on its own line
 	contact_parts = [x for x in [location, phone, email] if x]
-	p_contact = hdr_cell.add_paragraph()
-	_add_run(p_contact, "  |  ".join(contact_parts), size=Pt(9), color=RGBColor(0xFF, 0xFF, 0xFF))
-	p_contact.paragraph_format.space_after = Pt(8)
+	for i, part in enumerate(contact_parts):
+		p_contact = hdr_cell.add_paragraph()
+		_add_run(p_contact, part, size=Pt(9), color=RGBColor(0xFF, 0xFF, 0xFF))
+		p_contact.paragraph_format.space_after = Pt(8) if i == len(contact_parts) - 1 else Pt(1)
 
 	# Spacer between header and body
 	spacer = doc.add_paragraph()
@@ -139,7 +141,7 @@ def render_docx(
 	footer = section.footer
 	fp = footer.paragraphs[0]
 	fp.alignment = 1  # WD_ALIGN_PARAGRAPH.CENTER
-	_add_run(fp, _FOOTER_TEXT, size=Pt(8), color=RGBColor(0x80, 0x80, 0x80))
+	_add_run(fp, _FOOTER_TEXT, size=Pt(9), color=RGBColor(0x40, 0x40, 0x40))
 
 	try:
 		doc.save(output_path)
