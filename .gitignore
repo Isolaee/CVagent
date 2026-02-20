@@ -1,1 +1,18 @@
 .claude/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Job inputs and generated output (keep local only)
+data/jobs/
+output/
