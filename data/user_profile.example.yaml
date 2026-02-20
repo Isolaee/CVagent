@@ -8,7 +8,7 @@ contact:
 
 summary: >
     Backend-focused software engineer with 5 years of experience building
-    data pipelines, REST APIs, and developer tooling in Python.
+    REST APIs, data pipelines, and developer tooling in Python.
 
 skills:
     - Python
@@ -22,6 +22,7 @@ education:
     - institution: "University of Helsinki"
       degree: "M.Sc. Computer Science"
       year: 2021
+      details: "Specializing in distributed systems and software engineering."
 
 work_history:
     - company: "Acme Corp"
@@ -31,7 +32,6 @@ work_history:
       highlights:
           - "Built ETL pipeline processing 10M events per day using Python and Kafka"
           - "Reduced API latency by 40% through query optimization and caching"
-          - "Mentored two junior engineers and led weekly code reviews"
 
     - company: "Startup Oy"
       title: "Software Engineer"
@@ -42,15 +42,10 @@ work_history:
           - "Designed and shipped REST APIs consumed by three external clients"
 
 projects:
-    - name: "CVagent"
-      description: "Local LLM-powered cover letter generator"
-      url: "https://github.com/janedoe/CVagent"
-      tech: ["Python", "Ollama", "Mistral"]
-
-    - name: "DataPipe"
-      description: "High-throughput streaming data pipeline for IoT sensor data"
-      url: null
-      tech: ["Python", "Kafka", "PostgreSQL"]
+    - name: "MyProject"
+      description: "A short description of what the project does"
+      url: "https://github.com/janedoe/myproject"
+      tech: ["Python", "FastAPI", "PostgreSQL"]
 
 languages:
     - language: "English"
