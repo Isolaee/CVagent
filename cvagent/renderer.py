@@ -15,6 +15,10 @@ _SIDEBAR_FILL = "F0F0F0"  # light grey
 _SIDEBAR_WIDTH = Cm(3.4)
 _CONTENT_WIDTH = Cm(13.6)
 _MARGIN = Cm(1.8)
+_FOOTER_TEXT = (
+	"Generated with CVAgent — an open-source cover letter automation tool developed by Eero Isola. "
+	"The project itself is a demonstration of practical software engineering skills."
+)
 
 
 def render_markdown(text: str, output_path: Path) -> None:
@@ -130,6 +134,12 @@ def render_docx(
 			p = right_cell.add_paragraph()
 		_add_run(p, para_text, size=Pt(10))
 		p.paragraph_format.space_after = Pt(8)
+
+	# --- Footer ---
+	footer = section.footer
+	fp = footer.paragraphs[0]
+	fp.alignment = 1  # WD_ALIGN_PARAGRAPH.CENTER
+	_add_run(fp, _FOOTER_TEXT, size=Pt(8), color=RGBColor(0x80, 0x80, 0x80))
 
 	try:
 		doc.save(output_path)
