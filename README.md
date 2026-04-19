@@ -1,24 +1,24 @@
 # CVAgent
 
-A local, privacy-first cover letter generator. Describe yourself once in a YAML profile, point the tool at a job posting (file or URL), and get a tailored cover letter — without sending your data to any cloud service.
+A cover letter generator powered by your choice of LLM. Describe yourself once in a YAML profile, point the tool at a job posting (file or URL), and get a tailored cover letter — using a local model via Ollama or Claude via the Anthropic API.
 
 ## Goals
 
 - **Automate** the tedious parts of job applications — no more rewriting the same cover letter from scratch
-- **Personalise** every letter to the specific role and company using a local LLM
-- **Keep data local** — your profile and generated letters never leave your machine
+- **Personalise** every letter to the specific role and company
+- **Flexible LLM backend** — run fully local via Ollama, or use Claude for higher quality output
 - **Demonstrate practical engineering** — the project itself is a portfolio piece
 
 ## How It Works
 
 1. Your skills, work history, and contact details live in `data/user_profile.yaml`
 2. A job description is provided as a YAML file or a public URL
-3. The LLM (running locally via [Ollama](https://ollama.com)) writes a tailored cover letter
+3. The LLM writes a tailored cover letter (local via [Ollama](https://ollama.com), or Claude via Anthropic API)
 4. Output is saved as a formatted `.docx` file ready to open in Word and export as PDF
 
 ## Setup
 
-**Prerequisites:** Python 3.9+, [Ollama](https://ollama.com) installed and running
+**Prerequisites:** Python 3.9+
 
 ```bash
 # 1. Clone the repo
@@ -28,24 +28,36 @@ cd CVagent
 # 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Pull a model
-ollama pull mistral
-
-# 4. Create your profile (gitignored — stays local)
+# 3. Create your profile (gitignored — stays local)
 cp data/user_profile.example.yaml data/user_profile.yaml
 # Edit data/user_profile.yaml with your details
 ```
 
+**For Ollama (local, default):** [Install Ollama](https://ollama.com) and pull a model:
+```bash
+ollama pull mistral
+```
+
+**For Anthropic API:** Add your key to a `.env` file in the project root (gitignored):
+```bash
+echo "ANTHROPIC_API_KEY=sk-ant-..." >> .env
+```
+
 ## Usage
 
-**From a job YAML file:**
+**Local model via Ollama (default):**
 ```bash
 python -m cvagent.cli data/jobs/myjob.yaml --format docx
 ```
 
+**Claude via Anthropic API:**
+```bash
+python -m cvagent.cli data/jobs/myjob.yaml --provider anthropic --format docx
+```
+
 **From a job posting URL:**
 ```bash
-python -m cvagent.cli https://company.com/careers/job-posting --format docx
+python -m cvagent.cli https://company.com/careers/job-posting --provider anthropic --format docx
 ```
 
 **Options:**
@@ -55,7 +67,8 @@ positional:
 
 optional:
   --profile PATH       Path to user_profile.yaml (default: data/user_profile.yaml)
-  --model MODEL        Ollama model name (default: mistral)
+  --provider PROVIDER  LLM provider: ollama | anthropic (default: ollama)
+  --model MODEL        Model name (default: mistral for Ollama, claude-sonnet-4-6 for Anthropic)
   --format FORMAT      Output format: markdown | text | stdout | docx (default: markdown)
   --output PATH        Output file path (auto-named from company + role if omitted)
 ```
@@ -83,10 +96,12 @@ See `data/user_profile.example.yaml` for the full profile format.
 
 | Component | Library |
 |---|---|
-| LLM inference | [Ollama](https://ollama.com) + `ollama` Python SDK |
+| LLM inference (local) | [Ollama](https://ollama.com) + `ollama` Python SDK |
+| LLM inference (cloud) | [Anthropic API](https://docs.anthropic.com) + `anthropic` Python SDK |
 | DOCX rendering | `python-docx` |
 | HTML scraping | `requests` + `beautifulsoup4` |
 | Config format | `PyYAML` |
+| Env vars | `python-dotenv` |
 | Testing | `pytest` + `pytest-mock` |
 | Linting | `ruff` |
 

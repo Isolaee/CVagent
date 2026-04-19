@@ -5,8 +5,12 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from cvagent.job import fetch_job_from_url, load_job
-from cvagent.llm import DEFAULT_MODEL, generate
+from cvagent.llm import DEFAULT_ANTHROPIC_MODEL, DEFAULT_MODEL, DEFAULT_PROVIDER, generate
 from cvagent.profile import load_profile
 from cvagent.prompt import build_prompt
 from cvagent.renderer import render_docx, render_markdown, render_text, render_to_stdout
@@ -17,7 +21,7 @@ _DEFAULT_OUTPUT_DIR = _REPO_ROOT / "output"
 
 
 def main() -> None:
-	parser = argparse.ArgumentParser(description="Generate a customized cover letter using a local LLM via Ollama.")
+	parser = argparse.ArgumentParser(description="Generate a customized cover letter using a local or cloud LLM.")
 	parser.add_argument(
 		"job",
 		help="Path to a job YAML file, or a URL to a job posting page",
@@ -29,9 +33,18 @@ def main() -> None:
 		help="Path to user_profile.yaml (default: data/user_profile.yaml)",
 	)
 	parser.add_argument(
+		"--provider",
+		choices=["ollama", "anthropic"],
+		default=DEFAULT_PROVIDER,
+		help="LLM provider to use (default: ollama). Use 'anthropic' for Claude via API.",
+	)
+	parser.add_argument(
 		"--model",
-		default=DEFAULT_MODEL,
-		help=f"Ollama model name (default: {DEFAULT_MODEL})",
+		default=None,
+		help=(
+			f"Model name. Ollama default: {DEFAULT_MODEL}. "
+			f"Anthropic default: {DEFAULT_ANTHROPIC_MODEL}."
+		),
 	)
 	parser.add_argument(
 		"--format",
@@ -47,6 +60,10 @@ def main() -> None:
 	)
 	args = parser.parse_args()
 
+	# Resolve model default based on provider
+	if args.model is None:
+		args.model = DEFAULT_ANTHROPIC_MODEL if args.provider == "anthropic" else DEFAULT_MODEL
+
 	profile = load_profile(args.profile)
 	if args.job.startswith("http://") or args.job.startswith("https://"):
 		job = fetch_job_from_url(args.job, model=args.model)
@@ -54,8 +71,8 @@ def main() -> None:
 		job = load_job(Path(args.job))
 	prompt = build_prompt(profile, job)
 
-	print(f"Generating cover letter for {job['role']} at {job['company']}...")
-	text = generate(prompt, model=args.model)
+	print(f"Generating cover letter for {job['role']} at {job['company']} via {args.provider}...")
+	text = generate(prompt, model=args.model, provider=args.provider)
 
 	if args.format == "stdout":
 		render_to_stdout(text)
