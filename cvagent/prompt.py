@@ -34,7 +34,7 @@ def build_prompt(profile: dict[str, Any], job: dict[str, Any]) -> str:
     contact = profile.get("contact", {})
     name = contact.get("name", "Applicant")
 
-    prompt = f"""You are an expert career coach and professional writer.
+    prompt = f"""You are an expert career coach and professional writer specialising in ATS-optimised cover letters.
 Write a cover letter for the following applicant and job.
 
 # Applicant
@@ -56,13 +56,27 @@ Location: {job.get('location', 'Not specified')}
 {job['description'].strip()}
 
 # Instructions
+
+## Content rules (truthfulness)
+- Use ONLY the skills, experience, and projects listed above — do not invent, infer, or embellish
+- Do not claim proficiency in any technology not listed in the Skills section
+- Every specific claim must be traceable to the work history or projects provided
+- If a required skill from the job description is not in the applicant's profile, do not mention it
+
+## ATS and AI screening rules
+- Mirror exact keywords and phrases from the job description where they match the applicant's real experience
+- Use standard section flow: opening hook → relevant experience → why this company → call to action
+- Spell out acronyms on first use (e.g. "Continuous Integration (CI)")
+- Avoid tables, columns, images, headers/footers, or any formatting that ATS parsers cannot read
+- Use plain paragraph text only; no bullet points inside the letter body
+- Bold (**phrase**) may be used sparingly for the most critical skill matches
+- Keep sentences under 25 words where possible for readability scoring
+
+## Format
 - Write {length}
 - Tone: {tone}
 - Address the letter to the hiring team at {job['company']}
-- Highlight skills and experience most relevant to the job description
-- Do not invent facts; use only what is provided above
-- Output only the cover letter text, no preamble or commentary
-- Bold key phrases where appropriate using markdown (**phrase**)
+- Output only the cover letter text — no subject line, no preamble, no commentary
 """
     return prompt
 
