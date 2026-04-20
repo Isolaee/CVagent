@@ -28,7 +28,7 @@ def load_job(path: Path) -> dict[str, Any]:
 	return data
 
 
-def fetch_job_from_url(url: str, model: str = "mistral") -> dict[str, Any]:
+def fetch_job_from_url(url: str, model: str = "mistral", provider: str = "ollama") -> dict[str, Any]:
 	"""Fetch a job posting from a URL and extract fields using the LLM.
 
 	Downloads the page, strips HTML to plain text, then asks the LLM to
@@ -42,7 +42,7 @@ def fetch_job_from_url(url: str, model: str = "mistral") -> dict[str, Any]:
 	page_text = _fetch_page_text(url)
 
 	print("Extracting job details with LLM...")
-	data = _extract_with_llm(page_text, model)
+	data = _extract_with_llm(page_text, model, provider)
 
 	_validate_job(data)
 	# Always store the source URL
@@ -70,7 +70,7 @@ def _fetch_page_text(url: str) -> str:
 	return text[:8000]
 
 
-def _extract_with_llm(page_text: str, model: str) -> dict[str, Any]:
+def _extract_with_llm(page_text: str, model: str, provider: str = "ollama") -> dict[str, Any]:
 	"""Ask the LLM to extract structured job data from raw page text.
 
 	Returns a dict with at minimum: company, role, description.
@@ -90,7 +90,7 @@ def _extract_with_llm(page_text: str, model: str) -> dict[str, Any]:
 		f"Job posting text:\n{page_text}"
 	)
 
-	raw = generate(prompt, model=model)
+	raw = generate(prompt, model=model, provider=provider)
 
 	# Strip markdown fences if the LLM adds them despite instructions
 	raw = re.sub(r"^```[a-z]*\n?", "", raw.strip())

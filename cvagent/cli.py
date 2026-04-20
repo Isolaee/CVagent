@@ -66,7 +66,7 @@ def main() -> None:
 
 	profile = load_profile(args.profile)
 	if args.job.startswith("http://") or args.job.startswith("https://"):
-		job = fetch_job_from_url(args.job, model=args.model)
+		job = fetch_job_from_url(args.job, model=args.model, provider=args.provider)
 	else:
 		job = load_job(Path(args.job))
 	prompt = build_prompt(profile, job)
