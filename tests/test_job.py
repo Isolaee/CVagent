@@ -81,7 +81,7 @@ def test_fetch_job_from_url_strips_nav_footer(mocker):
 
 	captured = {}
 
-	def fake_generate(prompt, model):
+	def fake_generate(prompt, model, provider="ollama"):
 		captured["prompt"] = prompt
 		return json.dumps(_EXTRACTED)
 
